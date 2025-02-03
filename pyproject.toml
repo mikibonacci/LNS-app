@@ -1,0 +1,31 @@
+[build-system]
+requires = ["flit_core >= 3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "lns_app"
+description="Tools for the Multiplexing Spectrometer CAMEA in AiiDAlab."
+version = "0.0.1"
+authors = [
+    {name = "Miki Bonacci", email = "miki.bonacci@psi.ch"},
+    {name = "Lass Jakob", email = "jakob.lass@psi.ch"},
+    {name = "Gabriel Daniel Mazzone", email = "daniel.mazzone@psi.ch"},
+    {name = "Giovanni Pizzi", email = "giovanni.pizzi@psi.ch"}
+]
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+]
+keywords = ["aiidalab", "plugin", "camea"]
+requires-python = ">=3.8"
+dependencies = [
+    "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git"
+]
+
+[tool.ruff.lint]
+ignore = ["E501", "E402", "TRY003", "RUF012", "N806"]
+
+[project.urls]
+Source = "https://github.com/mikibonacci/LNS-apps"
+Logo = "https://raw.githubusercontent.com/aiidalab/aiidalab-qe/master/miscellaneous/logos/QE.jpg" 

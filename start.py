@@ -11,7 +11,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
             <div class="features">
                 <a
                     class="feature"
-                    href="{appbase}/plot.ipynb"
+                    href="{appbase}/src/lns_app/plot.ipynb"
                     target="_blank">
                     <i 
                         class="fa fa-bar-chart feature-logo" 
@@ -22,7 +22,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                 </a>
                 <a
                     class="feature"
-                    href="{notebase}/mjolnir.ipynb"
+                    href="{notebase}/src/lns_app/mjolnir.ipynb"
                     target="_blank">
                     <i 
                         class="fa fa-laptop feature-logo" 
