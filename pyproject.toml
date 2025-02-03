@@ -20,7 +20,7 @@ classifiers = [
 keywords = ["aiidalab", "plugin", "camea"]
 requires-python = ">=3.8"
 dependencies = [
-    "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git"
+    "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git@remove_PyQT_dep"
 ]
 
 [tool.ruff.lint]
