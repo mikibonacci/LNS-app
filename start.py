@@ -29,7 +29,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                         style="font-size:40px;" 
                         alt="Mjolnir analysis">
                     </i>
-                    <div class="feature-label">Analysis of CAMEA data (via MJOLNIR)</div>
+                    <div class="feature-label">Analysis of CAMEA data (with MJOLNIR)</div>
                 </a>
             </div>
         </div>
