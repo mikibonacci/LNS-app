@@ -11,7 +11,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
             <div class="features">
                 <a
                     class="feature"
-                    href="{appbase}/src/lns_app/plot.ipynb"
+                    href="{appbase}/plot.ipynb"
                     target="_blank">
                     <i 
                         class="fa fa-bar-chart feature-logo" 
@@ -22,40 +22,20 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                 </a>
                 <a
                     class="feature"
-                    href="{notebase}/src/lns_app/mjolnir.ipynb"
+                    href="{appbase}/proposal_history.ipynb"
                     target="_blank">
                     <i 
-                        class="fa fa-laptop feature-logo" 
+                        class="fa fa-folder-open feature-logo" 
                         style="font-size:40px;" 
                         alt="Mjolnir analysis">
                     </i>
-                    <div class="feature-label">Mjolnir analysis (Jupyter notebook)</div>
+                    <div class="feature-label">Analysis of CAMEA data (with MJOLNIR)</div>
                 </a>
             </div>
+        </div>
+        <div style="text-align:left; margin-top:0px;">
+            <a href="https://www.psi.ch/en/sinq/camea" target="_blank">Go to CAMEA webpage</a> <br>
+            <a href="https://mjolnir.readthedocs.io/en/latest/index.html" target="_blank">Go to MJOLNIR Documentation</a>
         </div>
     """)
-    
-    
-    
-    return ipw.HTML(
-        f"""
-        <div class="app-container">
-            <h1 style="text-align:center; font-size:50px;">LNS Apps</h1>
-            <div class="features">
-                <a 
-                    class="feature"
-                    href="{appbase}/mjolnir.ipynb" 
-                    target="_blank">
-                    <i 
-                        class="fa fa-laptop feature-logo" 
-                        style="font-size:40px;" 
-                        alt="Mjolnir analysis"
-                    </i>
-                    <div class="feature-label">Mjolnir analysis</div>
-                </a>
-            </div>
-        </div>
-        """
-    )
-
     
