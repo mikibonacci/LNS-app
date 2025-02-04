@@ -71,22 +71,61 @@ class ProposalsManagerMVC(ipw.VBox):
         
         self.proposal_info = ipw.HTML()
         
+        ##### CREATE NOTEBOOK WIDGETS #####
         self.create_analysis_button = ipw.Button(
             description='Create notebook', style={"button_color":"lightgreen"}, disabled=True
         )
         self.create_analysis_button.on_click(self.create_analysis_folder)
         
+        self.create_analysis_text = ipw.HTML("")
+        
+        self.create_notebook_box = ipw.HBox([
+            self.create_analysis_button, 
+            self.create_analysis_text,
+            ])
+        
+        ##### OPEN NOTEBOOK WIDGETS #####
         self.open_analysis_button = ipw.Button(
             description='Open notebook', button_style='primary', disabled=True
         )
         self.open_analysis_button.on_click(self.open_analysis)
         
-        self.reset_analysis_button = ipw.Button(
-            description='Reset notebook', button_style='warning', disabled=True
+        ##### DELETE NOTEBOOK WIDGETS #####
+        ########## STEP 1 ##########
+        self.delete_analysis_button = ipw.Button(
+            description='Delete notebook', button_style='danger', disabled=True
         )
-        ipw.dlink((self.open_analysis_button, 'disabled'), (self.reset_analysis_button, 'disabled'))
-        self.reset_analysis_button.on_click(self.reset_analysis)
+        ipw.dlink((self.open_analysis_button, 'disabled'), (self.delete_analysis_button, 'disabled'))
+        self.delete_analysis_button.on_click(self.delete_analysis_first)
         
+        self.delete_analysis_text = ipw.HTML("""This deletes the notebook related to the selected proposal.""")
+        
+        self.first_step_delete_notebook_box = ipw.HBox([
+            self.delete_analysis_button, 
+            self.delete_analysis_text,
+            ])
+        
+        ########## STEP 2 ##########
+        self.delete_confirmation_text = ipw.Text(
+            placeholder='',
+            description='Please type DELETE and press enter to confirm:',
+            disabled=False,
+            style={"description_width":"50%"}
+        )
+                
+        self.delete_confirmation_button = ipw.Button(
+            description='Confirm', button_style='warning', disabled=True
+        )
+        ipw.dlink((self.delete_confirmation_text, 'value'), (self.delete_confirmation_button, 'disabled'), lambda x: x != 'DELETE')
+        self.delete_confirmation_button.on_click(self.delete_analysis_second)
+        
+        self.delete_confirmation_box = ipw.HBox([
+            self.delete_confirmation_text,
+            self.delete_confirmation_button,
+        ])
+        self.delete_confirmation_box.layout.display = 'none'
+        
+        ##### APP MODE WIDGETS #####
         self.app_mode = ipw.Checkbox(
             value=True,
             description='Open in app mode',
@@ -100,14 +139,15 @@ class ProposalsManagerMVC(ipw.VBox):
         self.children = [
             ipw.HBox([self.proposal_id, self.examples_id_checkbox]),
             self.proposal_info,
-            self.create_analysis_button,
+            self.create_notebook_box,
             ipw.HBox(
                 [
                     self.open_analysis_button,
                     self.app_mode,
                 ],
             ),
-            ipw.HBox([self.reset_analysis_button, ipw.HTML("""This re-initializes the notebook related to the selected proposal.""")]),
+            self.first_step_delete_notebook_box,
+            self.delete_confirmation_box,
             self.proposal_files,
             ]
     
@@ -146,17 +186,16 @@ class ProposalsManagerMVC(ipw.VBox):
             return
         else:
             self.open_analysis_button.disabled = False
+            self.delete_analysis_text.value = """This deletes the notebook related to the selected proposal."""
             
         
         # 1. check if we have the analysis folder
         if not self.proposal_folder_exists() or not self.analysis_notebook_exists():
-            self.proposal_info.value += f"""<br>The notebook for the selected proposal (ID: {self.proposal_id.value}) do not exist.<br>
-            It can be initialized by clicking the 'Create notebook' button.
-            """
+            self.create_analysis_text.value = f"""Create notebook for the selected proposal (ID: {self.proposal_id.value})."""
             self.create_analysis_button.disabled = False
             self.open_analysis_button.disabled = True
         else:
-            self.proposal_info.value = f"Analysis notebook exists."
+            self.create_analysis_text.value = f"Analysis notebook exists."
             self.open_analysis_button.disabled = False
             self.create_analysis_button.disabled = True
         
@@ -167,10 +206,25 @@ class ProposalsManagerMVC(ipw.VBox):
         if len(results[1]) > 0:
             self.proposal_files.value += "\n" + "\n".join(results[1])
     
-    def reset_analysis(self, _):
+    def delete_analysis_first(self, _):
         
         if not self.proposal_id.value:
             return   
+        
+        self.delete_confirmation_box.layout.display = 'block'
+
+    def delete_analysis_second(self, _):
+        """Callback when delete_confirmation_text changes
+        """
+        # DELETE THE NOTEBOOK, THEN:
+        
+        self.create_analysis_button.disabled = False
+        self.open_analysis_button.disabled = True
+        self.delete_analysis_button.disabled = True
+        self.delete_confirmation_box.layout.display = 'none'
+        
+        self.delete_analysis_text.value = f"Analysis notebook for {self.proposal_id.value} deleted."
+        self.create_analysis_text.value = f"""Create notebook for the selected proposal (ID: {self.proposal_id.value})."""
     
     def create_analysis_folder(self, _):
         """Create analysis folder for the proposal
@@ -183,7 +237,8 @@ class ProposalsManagerMVC(ipw.VBox):
         
         self.create_analysis_button.disabled = True
         self.open_analysis_button.disabled = False
-        
+        self.delete_analysis_text.value = """This deletes the notebook related to the selected proposal."""
+        self.create_analysis_text.value = f"Analysis notebook exists."
         
     def open_analysis(self, _):
         """Callback when open_analysis_button is clicked
@@ -227,5 +282,5 @@ class ProposalsManagerMVC(ipw.VBox):
         if not self.analysis_notebook_exists():
             # create the analysis notebook via templating it
             #self.generate_notebook(self.proposal_id.value)  
-            self.proposal_info.value = "(not for real:) Analysis notebook created."
+            self.create_analysis_text.value = "(not for real:) Analysis notebook created."
             pass
