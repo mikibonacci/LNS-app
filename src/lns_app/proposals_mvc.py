@@ -13,6 +13,7 @@ default_example_folder = root_path = Path.resolve(Path(__file__) / '..' / '..' /
 class ProposalsManagerMVC(ipw.VBox):
     """class to manage proposals
 
+    TODO: use traits, and make it more modular, in particular the changing HTML values.
     """
     
     def __init__(
@@ -74,9 +75,17 @@ class ProposalsManagerMVC(ipw.VBox):
         )
         self.examples_id_checkbox.observe(self.on_examples_checkbox_change, names='value')
         
+        self.refresh_search_button = ipw.Button(
+            description='Refresh search',
+            icon="refresh",
+            disabled=False,
+        )
+        self.refresh_search_button.on_click(self.refresh_search)
+        
         self.proposals_box = ipw.HBox([
             self.proposal_id,
             self.examples_id_checkbox,
+            self.refresh_search_button,
         ])
             
         ##### CREATE NOTEBOOK WIDGETS #####
@@ -93,14 +102,7 @@ class ProposalsManagerMVC(ipw.VBox):
             ])
         
         ##### OPEN NOTEBOOK WIDGETS #####
-        self.open_analysis_button = LinkButton(
-            description="Opv    en notebook",
-            link="",
-            #icon="list",
-            class_="mod-primary",
-            style_="color: white;",
-            disabled=False,
-        )
+        self.open_analysis_button = ipw.HTML()
         ############ APP MODE WIDGETS #####
         self.app_mode = ipw.Checkbox(
             value=True,
@@ -108,6 +110,7 @@ class ProposalsManagerMVC(ipw.VBox):
             disabled=False,
             indent=False
         )
+        self.app_mode.observe(lambda x: self.init_open_analysis_button(), names='value')
         
         self.open_analysis_box = ipw.HBox([
             self.open_analysis_button,
@@ -150,8 +153,7 @@ class ProposalsManagerMVC(ipw.VBox):
         
         self.change_display_open_delete_boxes('none')
         
-        
-        self.proposal_files= ipw.HTML()    
+        self.proposal_files= ipw.HTML()
         
         self.children = [
             self.proposals_box,
@@ -161,6 +163,10 @@ class ProposalsManagerMVC(ipw.VBox):
             self.delete_confirmation_box,
             self.proposal_files,
             ]
+        
+    def refresh_search(self, _):
+        self.rendered = False
+        self.render()
     
     def discover_proposals(self, ):
         """Discover proposals in proposals_folder
@@ -184,9 +190,10 @@ class ProposalsManagerMVC(ipw.VBox):
             self.observed_folder = self.proposals_folder
             self.destination_folder = self.analysis_folder
             self.proposals = self.discover_proposals()
-            
+        
         self.proposal_id.value = None
         self.proposal_files.value = ""
+        self.create_analysis_text.value = ""
         
         self.change_display_open_delete_boxes('none')
         
@@ -216,7 +223,9 @@ class ProposalsManagerMVC(ipw.VBox):
         # 2. check the proposal folder content
         results = self.run_detect_proposal_history_in_thread(change.new)
         files_info = "<br>".join(results[0])
-        self.proposal_files.value = f"Files contained in the mounted proposal folder:<br>{files_info}"
+        self.proposal_files.value = f"""
+        <h5>Files contained in the mounted proposal folder (ID: {self.proposal_id.value}):</h5>{files_info}
+        """
         if len(results[1]) > 0:
             self.proposal_files.value += "\n" + "\n".join(results[1])
     
@@ -254,7 +263,6 @@ class ProposalsManagerMVC(ipw.VBox):
         self.generate_notebook()
         
         self.create_analysis_button.disabled = True
-        self.open_analysis_button.disabled = False
         self.delete_analysis_text.value = """This deletes the notebook related to the selected proposal."""
         self.create_analysis_text.value = f"Analysis notebook created."
         self.change_display_open_delete_boxes('block')
@@ -265,8 +273,11 @@ class ProposalsManagerMVC(ipw.VBox):
                                capture_output=True, text=True)
         return files.stdout.strip().split("\n"), files.stderr.strip().split("\n")
 
-    # Function to run detect_proposal_history in a separate thread and return the results
     def run_detect_proposal_history_in_thread(self, proposal_name: str):
+        """Function to run detect_proposal_history in a separate thread and return the results
+        
+        It uses the MJOLNIRHistory command - as implemented in the *detect_proposal_history* method-to detect the proposal history.
+        """
         result = []
 
         thread = threading.Thread(target=lambda: result.extend(self.detect_proposal_history(proposal_name)))
@@ -283,7 +294,7 @@ class ProposalsManagerMVC(ipw.VBox):
     def analysis_notebook_exists(self):
         if not self.proposal_id.value:
             return False
-        return (self.destination_folder / self.proposal_id.value / f"{self.proposal_id.value}_analysis.ipynb").exists()
+        return (self.destination_folder / self.proposal_id.value / f"notebook_proposal{self.proposal_id.value}.ipynb").exists()
     
     def generate_folder(self):
         if not self.proposal_folder_exists():
@@ -297,20 +308,52 @@ class ProposalsManagerMVC(ipw.VBox):
                 dest_path = str(self.destination_folder), 
                 data_path = str(self.observed_folder),
                 ) 
+    
+    @staticmethod
+    def get_correct_nb_directory(notebook_dir, notebook_name):
+        from notebook.notebookapp import list_running_servers
+        import urllib.parse
+        import os
 
+        # Get the root notebook directory
+        servers = list(list_running_servers())
+        if servers:
+            root_dir = servers[0]['notebook_dir']  # Jupyter root directory
+        else:
+            root_dir = os.getcwd()  # Fallback to current working directory
+
+        # Construct the correct relative URL
+        notebook_path = os.path.relpath(notebook_dir, root_dir)
+        notebook_rel_path_url = f"/{urllib.parse.quote(notebook_path)}/{notebook_name}"
+        notebook_url = f"http://localhost:8888/notebooks{notebook_rel_path_url}"
+
+        # Print the correct URL
+        #print("Correct Notebook URL:", notebook_url)
+        
+        return notebook_rel_path_url
+
+    def init_open_analysis_button(self):
+        notebook_dir = str(self.destination_folder / self.proposal_id.value) 
+        notebook_name = f"notebook_proposal{self.proposal_id.value}.ipynb"
+        url = self.get_correct_nb_directory(notebook_dir, notebook_name)
+        mode = "apps" if self.app_mode.value else "notebooks"
+        self.open_analysis_box.children =(
+            LinkButton(
+                description="Open notebook",
+                link=f'/{mode}'+url,
+                #icon="list",
+                class_="mod-primary",
+                style_="color: white;",
+                disabled=False,
+            ),
+            self.open_analysis_box.children[1],
+        )
+    
     def change_display_open_delete_boxes(self, display):
         self.open_analysis_box.layout.display = display
         self.first_step_delete_notebook_box.layout.display = display
         self.delete_confirmation_box.layout.display = 'none'
         
         if display == "block" and self.analysis_notebook_exists():
-            self.open_analysis_box.children =(LinkButton(
-                    description="Open notebook",
-                    link=str(self.destination_folder / self.proposal_id.value / f"{self.proposal_id.value}_analysis.ipynb"),
-                    #icon="list",
-                    class_="mod-primary",
-                    style_="color: white;",
-                    disabled=False,
-                ),
-                self.open_analysis_box.children[1],
-            )                                  
+            self.init_open_analysis_button()
+                                              

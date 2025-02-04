@@ -22,7 +22,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                 </a>
                 <a
                     class="feature"
-                    href="{notebase}/proposal_history.ipynb"
+                    href="{appbase}/proposal_history.ipynb"
                     target="_blank">
                     <i 
                         class="fa fa-folder-open feature-logo" 

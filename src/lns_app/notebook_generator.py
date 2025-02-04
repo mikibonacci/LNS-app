@@ -34,6 +34,6 @@ def generate_notebook_file(proposal_id: str, dest_path: str, data_path: str, ind
     
     notebook['cells'][0]['source'] = TEXT_FIRST_CELL.replace("--PROPOSAL_ID--", proposal_id)
     
-    with open(dest_path+f'/{proposal_id}/{proposal_id}_analysis.ipynb', 'w') as f:
+    with open(dest_path+f'/{proposal_id}/notebook_proposal{proposal_id}.ipynb', 'w') as f:
         json.dump(notebook, f, indent=4)
     
