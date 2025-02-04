@@ -107,8 +107,7 @@ class ProposalsManagerMVC(ipw.VBox):
                     self.app_mode,
                 ],
             ),
-            ipw.HBox([self.reset_analysis_button, ipw.HTML("""This will delete all the analysis
-                                                           files related to the selected proposal.""")]),
+            ipw.HBox([self.reset_analysis_button, ipw.HTML("""This re-initializes the notebook related to the selected proposal.""")]),
             self.proposal_files,
             ]
     
