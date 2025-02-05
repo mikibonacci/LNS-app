@@ -224,10 +224,10 @@ class ProposalsManagerMVC(ipw.VBox):
         results = self.run_detect_proposal_history_in_thread(change.new)
         files_info = "<br>".join(results[0])
         self.proposal_files.value = f"""
-        <h5>Files contained in the mounted proposal folder (ID: {self.proposal_id.value}):</h5>{files_info}
+        <h4>Files contained in the mounted proposal folder (ID: {self.proposal_id.value}):</h4>
+        
+        {files_info}
         """
-        if len(results[1]) > 0:
-            self.proposal_files.value += "\n" + "\n".join(results[1])
     
     def delete_analysis_first(self, _):
         
