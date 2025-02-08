@@ -65,6 +65,7 @@ class ProposalsManagerMVC(ipw.VBox):
             disabled=False,
             value=None,
         )
+        ipw.dlink(self.proposals, (self.proposal_id, 'options'))
         self.proposal_id.observe(self.on_proposal_id_change, names='value')
         
         self.examples_id_checkbox = ipw.Checkbox(
@@ -182,7 +183,7 @@ class ProposalsManagerMVC(ipw.VBox):
         """Callback when examples_id_checkbox changes
         """
         
-        if change.new:
+        if self.examples_id_checkbox.value:
             self.observed_folder = self.examples_folder
             self.destination_folder = self.testing_folder
             self.proposals = self.discover_proposals()
