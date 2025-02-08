@@ -329,7 +329,7 @@ class ProposalsManagerMVC(ipw.VBox):
         # Construct the correct relative URL
         notebook_path = os.path.relpath(notebook_dir, root_dir)
         notebook_rel_path_url = f"{urllib.parse.quote(notebook_path)}/{notebook_name}"
-        notebook_url = f"{JUPYTERHUB_DOMAIN}{base_url}"
+        base_nb_url = f"{JUPYTERHUB_DOMAIN}{base_url}"
 
         # Print the correct URL
         #print("Correct Notebook URL:", notebook_url)
@@ -344,7 +344,7 @@ class ProposalsManagerMVC(ipw.VBox):
         self.open_analysis_box.children =(
             LinkButton(
                 description="Open notebook",
-                link=f"{base_nb_url}{mode}{notebook_rel_path_url}",
+                link=f"{base_nb_url}{mode}/{notebook_rel_path_url}",
                 #icon="list",
                 class_="mod-primary",
                 style_="color: white;",
