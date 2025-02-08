@@ -65,7 +65,6 @@ class ProposalsManagerMVC(ipw.VBox):
             disabled=False,
             value=None,
         )
-        ipw.dlink(self.proposals, (self.proposal_id, 'options'))
         self.proposal_id.observe(self.on_proposal_id_change, names='value')
         
         self.examples_id_checkbox = ipw.Checkbox(
@@ -192,6 +191,7 @@ class ProposalsManagerMVC(ipw.VBox):
             self.destination_folder = self.analysis_folder
             self.proposals = self.discover_proposals()
         
+        self.proposal_id.options = self.proposals 
         self.proposal_id.value = None
         self.proposal_files.value = ""
         self.create_analysis_text.value = ""
