@@ -322,25 +322,28 @@ class ProposalsManagerMVC(ipw.VBox):
         else:
             root_dir = os.getcwd()  # Fallback to current working directory
 
+        JUPYTERHUB_DOMAIN = os.getenv("JUPYTERHUB_DOMAIN", "http://localhost:8888")  # Default domain
+        base_url = servers.get("base_url", "/")
+        mode = "apps" if self.app_mode.value else "notebooks"
+        
         # Construct the correct relative URL
         notebook_path = os.path.relpath(notebook_dir, root_dir)
-        notebook_rel_path_url = f"/{urllib.parse.quote(notebook_path)}/{notebook_name}"
-        notebook_url = f"http://localhost:8888/notebooks{notebook_rel_path_url}"
+        notebook_rel_path_url = f"{urllib.parse.quote(notebook_path)}/{notebook_name}"
+        notebook_url = f"{JUPYTERHUB_DOMAIN}{base_url}{mode}{notebook_rel_path_url}"
 
         # Print the correct URL
         #print("Correct Notebook URL:", notebook_url)
         
-        return notebook_rel_path_url
+        return notebook_url
 
     def init_open_analysis_button(self):
         notebook_dir = str(self.destination_folder / self.proposal_id.value) 
         notebook_name = f"notebook_proposal{self.proposal_id.value}.ipynb"
-        url = self.get_correct_nb_directory(notebook_dir, notebook_name)
-        mode = "apps" if self.app_mode.value else "notebooks"
+        notebook_url = self.get_correct_nb_directory(notebook_dir, notebook_name)
         self.open_analysis_box.children =(
             LinkButton(
                 description="Open notebook",
-                link=f'/{mode}'+url,
+                link=notebook_url,
                 #icon="list",
                 class_="mod-primary",
                 style_="color: white;",
