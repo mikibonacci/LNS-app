@@ -50,12 +50,12 @@ class ProposalsManagerMVC(ipw.VBox):
         ###### PROPOSALS ID WIDGETS ########
         if not self.proposals:
             self.children = [
-                ipw.HTML(f'Directory {self.proposals_folder} does not exist.')    
+                ipw.HTML(f'Directory {self.observed_folder} does not exist.')    
             ]
             return
         elif len(self.proposals) == 0:
             self.children = [
-                ipw.HTML(f'No proposals found in {self.proposals_folder}.')    
+                ipw.HTML(f'No proposals found in {self.observed_folder}.')    
             ]
             return
 
@@ -270,7 +270,7 @@ class ProposalsManagerMVC(ipw.VBox):
     
     def detect_proposal_history(self, proposal_name: str):
         """Detect proposal history using MJOLNIRHistory command"""
-        files = subprocess.run(f"MJOLNIRHistory {self.proposals_folder / proposal_name}/*", shell=True, 
+        files = subprocess.run(f"MJOLNIRHistory {self.observed_folder / proposal_name}/*", shell=True, 
                                capture_output=True, text=True)
         return files.stdout.strip().split("\n"), files.stderr.strip().split("\n")
 
