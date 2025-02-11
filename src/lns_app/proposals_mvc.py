@@ -60,7 +60,7 @@ class ProposalsManagerMVC(ipw.VBox):
             return
 
         self.proposal_id = ipw.Dropdown(
-            options=self.proposals,
+            options=[None]+self.proposals,
             description='Proposal ID:',
             disabled=False,
             value=None,
@@ -133,11 +133,12 @@ class ProposalsManagerMVC(ipw.VBox):
         )
 
         ########## STEP 2 ##########
+        self.delete_confirmation_description = ipw.HTML(
+        'Please type "DELETE" and press enter to confirm:'
+        )
         self.delete_confirmation_text = ipw.Text(
             placeholder='',
-            description='Please type DELETE and press enter to confirm:',
             disabled=False,
-            style={"description_width":"50%"}
         )
                 
         self.delete_confirmation_button = ipw.Button(
@@ -147,6 +148,7 @@ class ProposalsManagerMVC(ipw.VBox):
         self.delete_confirmation_button.on_click(self.delete_analysis_second)
         
         self.delete_confirmation_box = ipw.HBox([
+            self.delete_confirmation_description,
             self.delete_confirmation_text,
             self.delete_confirmation_button,
         ])
@@ -182,6 +184,8 @@ class ProposalsManagerMVC(ipw.VBox):
         """Callback when examples_id_checkbox changes
         """
         
+        self.proposal_id.value = None
+        
         if self.examples_id_checkbox.value:
             self.observed_folder = self.examples_folder
             self.destination_folder = self.testing_folder
@@ -191,8 +195,8 @@ class ProposalsManagerMVC(ipw.VBox):
             self.destination_folder = self.analysis_folder
             self.proposals = self.discover_proposals()
         
-        self.proposal_id.options = self.proposals 
-        self.proposal_id.value = None
+        self.proposal_id.options = [None]+self.proposals 
+        
         self.proposal_files.value = ""
         self.create_analysis_text.value = ""
         
