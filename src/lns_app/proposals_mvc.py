@@ -249,7 +249,7 @@ class ProposalsManagerMVC(ipw.VBox):
         # 1. delete the analysis folder
         # not the best way
         if self.proposal_folder_exists():
-            (self.destination_folder / self.proposal_id.value / f"{self.proposal_id.value}_analysis.ipynb").unlink(missing_ok=True)
+            (self.destination_folder / self.proposal_id.value / f"notebook_proposal{self.proposal_id.value}.ipynb").unlink(missing_ok=True)
             shutil.rmtree(self.destination_folder / self.proposal_id.value / ".ipynb_checkpoints", ignore_errors=True)
         self.create_analysis_button.disabled = False
         self.delete_confirmation_box.layout.display = 'none'
