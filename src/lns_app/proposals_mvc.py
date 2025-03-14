@@ -9,7 +9,7 @@ import shutil
 from aiidalab_qe.common.widgets import LinkButton
 
 default_example_folder = root_path = Path.resolve(Path(__file__) / '..' / '..' / '..' / 'examples' / 'Mnf2_oct_2021' / 'data')
-default_proposals_folder = root_path = Path('/mnt/camea_data/')
+default_proposals_folder = root_path = Path('/mnt/CAMEA_data/')
 
 class ProposalsManagerMVC(ipw.VBox):
     """class to manage proposals
@@ -19,7 +19,7 @@ class ProposalsManagerMVC(ipw.VBox):
     
     def __init__(
         self, 
-        proposals_folder: Path = Path('/mnt/camea_data/'), 
+        proposals_folder: Path = Path('/mnt/CAMEA_data/'), 
         examples_folder: Path = default_example_folder,
         analysis_folder: Path = Path('/mnt/camea_analysis/'),
         testing_folder: Path = Path('/mnt/camea_testing/'),
