@@ -9,6 +9,7 @@ import shutil
 from aiidalab_qe.common.widgets import LinkButton
 
 default_example_folder = root_path = Path.resolve(Path(__file__) / '..' / '..' / '..' / 'examples' / 'Mnf2_oct_2021' / 'data')
+default_proposals_folder = root_path = Path('/mnt/camea_data/')
 
 class ProposalsManagerMVC(ipw.VBox):
     """class to manage proposals
@@ -47,16 +48,59 @@ class ProposalsManagerMVC(ipw.VBox):
         
         self.proposals = self.discover_proposals()
         
+        ###### PROPOSALS FOLDER WIDGETS ######
+        
+        # 1. provide a proposal folder
+        self.proposals_folder_text = ipw.Text(
+            value=str(self.observed_folder),
+            disabled=False,
+        )
+        self.proposal_search_button = ipw.Button(
+            description='Search path',
+            icon="search",
+            disabled=False,
+        )
+        self.proposal_search_button.on_click(self.new_path_refresh_search)
+
+        self.proposal_search_reset_button = ipw.Button(
+            description='Reset search path',
+            icon="refresh",
+            tooltip="Reset the search path to the default one, i.e. /mnt/camea_data/",
+            disabled=False,
+        )
+        self.proposal_search_reset_button.on_click(self.reset_search)
+        
+        self.search_examples_button = ipw.Button(
+            description='Search examples',
+            tooltip="Search examples",
+            disabled=False,
+            icon = "search",
+        )
+        self.search_examples_button.on_click(self.search_examples)
+        
+        self.folder_search_box = ipw.HBox([
+                    self.proposals_folder_text,
+                    self.proposal_search_button,   
+                    self.proposal_search_reset_button,
+                    self.search_examples_button
+                ])
+        
         ###### PROPOSALS ID WIDGETS ########
-        if not self.proposals:
+        if not self.proposals or not self.observed_folder:
             self.children = [
-                ipw.HTML(f'Directory {self.observed_folder} does not exist.')    
+                ipw.HTML(f'Directory {self.observed_folder} does not exist. Please provide a valid directory.'),
+                self.folder_search_box
             ]
+            self.proposals_folder_text.disabled = False
+            self.proposal_search_button.disabled = False
             return
         elif len(self.proposals) == 0:
             self.children = [
-                ipw.HTML(f'No proposals found in {self.observed_folder}.')    
+                ipw.HTML(f'No proposals found in {self.observed_folder}. Please provide a valid directory.'),
+                self.folder_search_box,
             ]
+            self.proposals_folder_text.disabled = False
+            self.proposal_search_button.disabled = False
             return
 
         self.proposal_id = ipw.Dropdown(
@@ -67,14 +111,6 @@ class ProposalsManagerMVC(ipw.VBox):
         )
         self.proposal_id.observe(self.on_proposal_id_change, names='value')
         
-        self.examples_id_checkbox = ipw.Checkbox(
-            value=False,
-            description='Just use examples',
-            disabled=False,
-            indent=False
-        )
-        self.examples_id_checkbox.observe(self.on_examples_checkbox_change, names='value')
-        
         self.refresh_search_button = ipw.Button(
             description='Refresh search',
             icon="refresh",
@@ -82,10 +118,12 @@ class ProposalsManagerMVC(ipw.VBox):
         )
         self.refresh_search_button.on_click(self.refresh_search)
         
-        self.proposals_box = ipw.HBox([
-            self.proposal_id,
-            self.examples_id_checkbox,
-            self.refresh_search_button,
+        self.proposals_box = ipw.VBox([
+            self.folder_search_box,
+            ipw.HBox([
+                self.proposal_id,
+                self.refresh_search_button,
+            ]),
         ])
             
         ##### CREATE NOTEBOOK WIDGETS #####
@@ -169,6 +207,15 @@ class ProposalsManagerMVC(ipw.VBox):
     def refresh_search(self, _):
         self.rendered = False
         self.render()
+        
+    def new_path_refresh_search(self, _):
+        self.observed_folder = Path(self.proposals_folder_text.value)
+        self.refresh_search(_)
+    
+    def reset_search(self, _):
+        self.proposals_folder_text.value = str(default_proposals_folder)
+        self.observed_folder = default_proposals_folder
+        self.new_path_refresh_search(_)
     
     def discover_proposals(self, ):
         """Discover proposals in proposals_folder
@@ -180,27 +227,30 @@ class ProposalsManagerMVC(ipw.VBox):
         
         return []
     
-    def on_examples_checkbox_change(self, change):
-        """Callback when examples_id_checkbox changes
+    def search_examples(self, change):
+        """Callback when search_examples_button changes
         """
         
-        self.proposal_id.value = None
+        self.proposals_folder_text.value = str(self.examples_folder)
+        self.observed_folder = self.examples_folder
+        self.destination_folder = self.testing_folder
+        self.proposals = self.discover_proposals()
         
-        if self.examples_id_checkbox.value:
-            self.observed_folder = self.examples_folder
-            self.destination_folder = self.testing_folder
-            self.proposals = self.discover_proposals()
-        else:
-            self.observed_folder = self.proposals_folder
-            self.destination_folder = self.analysis_folder
-            self.proposals = self.discover_proposals()
+        # else:
+        #     self.proposals_folder_text.value = str(default_proposals_folder)
+        #     self.observed_folder = self.proposals_folder
+        #     self.destination_folder = self.analysis_folder
+        #     self.proposals = self.discover_proposals()
         
-        self.proposal_id.options = [None]+self.proposals 
         
-        self.proposal_files.value = ""
-        self.create_analysis_text.value = ""
+        if hasattr(self, 'proposal_id'):
+            self.proposal_id.value = None
+            self.proposal_id.options = [None]+self.proposals 
+            self.proposal_files.value = ""
+            self.create_analysis_text.value = ""
+            self.change_display_open_delete_boxes('none')
         
-        self.change_display_open_delete_boxes('none')
+        self.refresh_search(None)
         
     
     def on_proposal_id_change(self, change):
@@ -213,9 +263,21 @@ class ProposalsManagerMVC(ipw.VBox):
         else:
             self.delete_analysis_text.value = """This deletes the notebook related to the selected proposal."""
             
+        # 1. check the proposal folder content
+        results = self.run_detect_proposal_history_in_thread(change.new)
+        files_info = "<br>".join(results[0])
+        self.proposal_files.value = f"""
+        <h4>Files contained in the mounted proposal folder (ID: {self.proposal_id.value}):</h4>
         
-        # 1. check if we have the analysis folder
-        if not self.proposal_folder_exists() or not self.analysis_notebook_exists():
+        {files_info}
+        """
+        
+        # 2. check if we can create a notebook and we have the analysis folder
+        if "not correct format" in files_info:
+            self.create_analysis_text.value = f"""Proposal data not in the correct format. Are you sure it is the correct folder? Try to change the search path."""
+            self.create_analysis_button.disabled = True
+            self.change_display_open_delete_boxes('none')
+        elif not self.proposal_folder_exists() or not self.analysis_notebook_exists():
             self.create_analysis_text.value = f"""Create notebook for the selected proposal (ID: {self.proposal_id.value})."""
             self.create_analysis_button.disabled = False
             self.change_display_open_delete_boxes('none')
@@ -225,14 +287,7 @@ class ProposalsManagerMVC(ipw.VBox):
             self.change_display_open_delete_boxes('block')
         
         
-        # 2. check the proposal folder content
-        results = self.run_detect_proposal_history_in_thread(change.new)
-        files_info = "<br>".join(results[0])
-        self.proposal_files.value = f"""
-        <h4>Files contained in the mounted proposal folder (ID: {self.proposal_id.value}):</h4>
         
-        {files_info}
-        """
     
     def delete_analysis_first(self, _):
         
