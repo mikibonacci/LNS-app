@@ -7,7 +7,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
             <h1 
             style="text-align:center; 
             font-size:30px;">
-            LNS Apps and tools</h1>
+            LNS apps and tools</h1>
             <div class="features">
                 <a
                     class="feature"
