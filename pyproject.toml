@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "lns_app"
-description="Tools for the Multiplexing Spectrometer CAMEA in AiiDAlab."
+description="Tools for the LNS data analysis in AiiDAlab."
 version = "0.0.1"
 authors = [
     {name = "Miki Bonacci", email = "miki.bonacci@psi.ch"},
@@ -17,10 +17,13 @@ license = {file = "LICENSE.txt"}
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
 ]
-keywords = ["aiidalab", "plugin", "camea"]
+keywords = ["aiidalab", "plugin", "camea", "icon", "psi"]
 requires-python = ">=3.8"
 dependencies = [
-    "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git@remove_PyQT_dep"
+    "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git@remove_PyQT_dep",
+    "astropy",
+    "ipyfilechooser",
+    "ipympl"
 ]
 
 [tool.ruff.lint]
