@@ -40,13 +40,13 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                         style="font-size:40px;" 
                         alt="Mjolnir analysis">
                     </i>
-                    <div class="feature-label">Analysis of ICON (imaging data)</div>
+                    <div class="feature-label">Analysis of ICON data</div>
                 </a>
             </div>
         </div>
         <div style="text-align:left; margin-top:0px;">
             <a href="https://www.psi.ch/en/sinq/camea" target="_blank">Go to CAMEA webpage</a> <br>
-            <a href="https://mjolnir.readthedocs.io/en/latest/index.html" target="_blank">Go to MJOLNIR Documentation</a>
+            <a href="https://mjolnir.readthedocs.io/en/latest/index.html" target="_blank">Go to MJOLNIR Documentation</a> <br>
             <a href="https://www.psi.ch/en/sinq/icon" target="_blank">Go to ICON webpage</a>
         </div>
     """)

@@ -24,6 +24,8 @@ class ImageInspectorMVC(ipw.VBox):
     """inspect images as obtained from ICON files.
     
     this class is based on code written by Giovanni Pizzi
+    
+    NOTE: NOT USED YET! FOR NOW WE JUST USE THE NOTEBOOK.
     """
     def __init__(self, **kwargs):
         """Initialize the image inspector."""
