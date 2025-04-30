@@ -20,7 +20,7 @@ def generate_notebook_file(proposal_id: str, dest_path: str, data_path: str, ind
     """
     
     if notebook_template_path is None:
-        notebook_template_path = Path(__file__).parent / '..' / '..' / 'templates' / 'template_1.ipynb'
+        notebook_template_path = Path(__file__).parent / '..' / '..' / '..' / 'templates' / 'template_1.ipynb'
     
     
     with open(notebook_template_path, 'r') as f:
