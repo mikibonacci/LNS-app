@@ -2,8 +2,6 @@
 *.pyc
 *.tar.gz
 *.code-workspace
-#.*.ipynb
-#.ipynb*
 build/
 export/
 .do-not-setup-on-localhost
