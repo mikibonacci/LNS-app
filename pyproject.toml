@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "lns_app"
 description="Tools for the LNS data analysis in AiiDAlab."
-version = "0.0.1"
+version = "0.1.0"
 authors = [
     {name = "Miki Bonacci", email = "miki.bonacci@psi.ch"},
     {name = "Lass Jakob", email = "jakob.lass@psi.ch"},
