@@ -2,13 +2,15 @@ import ipywidgets as ipw
 import subprocess
 import threading
 from pathlib import Path
+from importlib.resources import files
+import traitlets
 
 from lns_app.camea.notebook_generator import generate_notebook_file
 import shutil
 
-from aiidalab_qe.common.widgets import LinkButton
+from lns_app.utils.widgets import LinkButton
 
-default_example_folder = root_path = Path.resolve(Path(__file__) / '..' / '..' / '..' / '..' / 'examples' / 'Mnf2_oct_2021' / 'data')
+default_example_folder = files("lns_app").joinpath("examples","Mnf2_oct_2021","data")
 default_proposals_folder = root_path = Path('/mnt/CAMEA_data/')
 
 class ProposalsManagerMVC(ipw.VBox):
@@ -43,9 +45,7 @@ class ProposalsManagerMVC(ipw.VBox):
         """
         if self.rendered:
             return
-        
-        self.rendered = True
-        
+
         self.proposals = self.discover_proposals()
         
         ###### PROPOSALS FOLDER WIDGETS ######
@@ -204,6 +204,8 @@ class ProposalsManagerMVC(ipw.VBox):
             self.proposal_files,
             ]
         
+        self.rendered = True
+
     def refresh_search(self, _):
         self.rendered = False
         self.render()
@@ -220,10 +222,10 @@ class ProposalsManagerMVC(ipw.VBox):
     def discover_proposals(self, ):
         """Discover proposals in proposals_folder
         """
-        if self.observed_folder.exists() and self.observed_folder.is_dir():
-            return [p.name for p in self.observed_folder.iterdir() if p.is_dir()]
-        elif not self.observed_folder.exists():
+        if not self.observed_folder.exists():
             return None
+        elif self.observed_folder.exists() and self.observed_folder.is_dir():
+            return [p.name for p in self.observed_folder.iterdir() if p.is_dir()]
         
         return []
     
@@ -328,10 +330,29 @@ class ProposalsManagerMVC(ipw.VBox):
         self.change_display_open_delete_boxes('block')
     
     def detect_proposal_history(self, proposal_name: str):
-        """Detect proposal history using MJOLNIRHistory command"""
-        files = subprocess.run(f"MJOLNIRHistory {self.observed_folder / proposal_name}/*", shell=True, 
-                               capture_output=True, text=True)
-        return files.stdout.strip().split("\n"), files.stderr.strip().split("\n")
+        """Detect proposal history using MJOLNIRHistory command
+        
+        For now, we don't use the MJOLNIRHistory command, we just list the files in the proposal folder.
+        """
+        # OLD CODE, TO BE RESTORED IF OPTIMIZED
+        #files = subprocess.run(f"MJOLNIRHistory {self.observed_folder / proposal_name}/*", shell=True, 
+        #                       capture_output=True, text=True)
+        #return files.stdout.strip().split("\n"), files.stderr.strip().split("\n")
+        # NEW TEMPORARY CODE
+        proposal_folder = self.observed_folder / proposal_name
+        if not proposal_folder.exists():
+            return ["Proposal folder does not exist."], [""]
+        if not proposal_folder.is_dir():
+            return ["Proposal folder is not a directory."], [""]
+        
+        files = list(proposal_folder.iterdir())
+        if not files:
+            return ["Proposal folder is empty."], [""]
+        
+        files_info = [f"{file.name} ({file.stat().st_size} bytes)" for file in files if file.is_file()]
+        if not files_info:
+            return ["Proposal folder does not contain any files."], [""]
+        return files_info, [""]  # No stderr output in this case, so we return an empty list for stderr
 
     def run_detect_proposal_history_in_thread(self, proposal_name: str):
         """Function to run detect_proposal_history in a separate thread and return the results
