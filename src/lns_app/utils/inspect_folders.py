@@ -33,12 +33,12 @@ def grep_hdf_files_informations(folder: Path) -> list:
             file_number = file.stem.split('n')[1].replace('hdf', '')
             if file_number.isdigit():
                 # clean from leading zeros
-                file_number = file_number.lstrip('0')
+                file_number = int(file_number.lstrip('0'))
                 if file_number:  # Ensure it's not an empty string
                     file_numbers.append(file_number)
     
     # Remove duplicates and sort the year numbers
     year_numbers = sorted(set(year_numbers)) 
-    file_numbers = sorted(set(file_numbers))   
+    file_numbers = [str(number) for number in sorted(set(file_numbers))]   
 
     return year_numbers, file_numbers
