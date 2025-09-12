@@ -10,3 +10,11 @@ export/
 # Sphinx documentation
 docs/html
 screenshots/
+
+# Jupyter checkpoint files
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# User Jupyter Notebooks
+.*-*.ipynb
+**/.*-*.ipynb
