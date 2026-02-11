@@ -134,7 +134,7 @@ class PlotButton(ipw.HBox):
 class ZipDownloadWidget(ipw.VBox):
     """Widget to create and download a zip file with selected data."""
 
-    def __init__(self, file_selection_widget, path, year_number, **kwargs):
+    def __init__(self, file_selection_widget, path, year_number, proposal_id, **kwargs):
         """
         Args:
             file_selection_widget: The widget containing file selection (e.g., FilesNumberWidget)
@@ -146,6 +146,7 @@ class ZipDownloadWidget(ipw.VBox):
         self.file_selection_widget = file_selection_widget
         self.path = path
         self.year_number = year_number
+        self.proposal_id = proposal_id
         self._is_downloading = False
         
         # Download button
@@ -190,7 +191,7 @@ class ZipDownloadWidget(ipw.VBox):
                 # 1. Create zip file with meaningful name
                 first_file = min(selected_files)
                 last_file = max(selected_files)
-                zip_filename = f"camea_data_{first_file}_{last_file}.zip"
+                zip_filename = f"camea_data_{self.proposal_id}_{first_file}_{last_file}.zip"
                 zip_path = Path(zip_filename)
 
                 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
