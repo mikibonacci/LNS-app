@@ -23,7 +23,9 @@ dependencies = [
     "mjolnir @ git+https://github.com/mikibonacci/MJOLNIR.git@remove_PyQT_dep",
     "astropy",
     "ipyfilechooser",
-    "ipympl"
+    "ipympl",
+    "plotly",
+    "scikit-image"
 ]
 
 [tool.flit.module]
