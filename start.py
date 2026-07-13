@@ -11,7 +11,7 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
             <div class="features">
                 <a
                     class="feature"
-                    href=f"{jupbase}/tree/SINQ_data"
+                    href="{jupbase}/tree/SINQ_data"
                     target="_blank"
                     title="Explore and download SINQ data from assigned instruments"
                 >
