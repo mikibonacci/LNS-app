@@ -11,7 +11,7 @@ import shutil
 from lns_app.utils.widgets import LinkButton
 
 default_example_folder = files("lns_app").joinpath("examples","Mnf2_oct_2021","data")
-default_proposals_folder = root_path = Path('/mnt/CAMEA_data/')
+default_proposals_folder = Path('/mnt/SINQ_data/CAMEA')
 
 class ProposalsManagerMVC(ipw.VBox):
     """class to manage proposals
@@ -21,7 +21,7 @@ class ProposalsManagerMVC(ipw.VBox):
     
     def __init__(
         self, 
-        proposals_folder: Path = Path('/mnt/CAMEA_data/'), 
+        proposals_folder: Path = default_proposals_folder, 
         examples_folder: Path = default_example_folder,
         analysis_folder: Path = Path('/mnt/camea_analysis/'),
         testing_folder: Path = Path('/mnt/camea_testing/'),
@@ -29,7 +29,11 @@ class ProposalsManagerMVC(ipw.VBox):
         
         self.rendered = False
         self.examples_folder = examples_folder
-        self.proposals_folder = proposals_folder
+        self.proposals_folder = (
+            proposals_folder 
+            if proposals_folder.exists()  # doesn't for power users; fallback to parent folder
+            else default_proposals_folder.parent
+        )
         self.observed_folder = self.proposals_folder
         self.proposals = []
         
@@ -65,7 +69,7 @@ class ProposalsManagerMVC(ipw.VBox):
         self.proposal_search_reset_button = ipw.Button(
             description='Reset search path',
             icon="refresh",
-            tooltip="Reset the search path to the default one, i.e. /mnt/camea_data/",
+            tooltip=f"Reset the search path to the default one, i.e. {self.proposals_folder}",
             disabled=False,
         )
         self.proposal_search_reset_button.on_click(self.reset_search)
