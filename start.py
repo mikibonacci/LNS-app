@@ -11,19 +11,6 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
             <div class="features">
                 <a
                     class="feature"
-                    href="{jupbase}/tree/SINQ_data"
-                    target="_blank"
-                    title="Explore and download SINQ data from assigned instruments"
-                >
-                    <i
-                        class="fa fa-folder-open feature-logo"
-                        style="font-size:40px;"
-                        alt="Plot">
-                    </i>
-                    <div class="feature-label">Explore SINQ data</div>
-                </a>
-                <a
-                    class="feature"
                     href="{appbase}/plot.ipynb"
                     target="_blank"
                     title="Plot any 2D data (uploaded as CSV)"
