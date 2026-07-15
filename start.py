@@ -48,6 +48,17 @@ def get_start_widget(appbase, jupbase, notebase):  # noqa: ARG001
                     </i>
                     <div class="feature-label">Analyze ICON data</div>
                 </a>
+                <a
+                    class="feature"
+                    href="{appbase}/proposal_data.ipynb"
+                    target="_blank">
+                    <i 
+                        class="fa fa-folder-open feature-logo" 
+                        style="font-size:40px;" 
+                        alt="Data from Proposal">
+                    </i>
+                    <div class="feature-label">Get Data connected to proposal</div>
+                </a>
             </div>
         </div>
         <div style="text-align:left; margin-top:0px;">
